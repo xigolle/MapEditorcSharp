@@ -9,6 +9,11 @@ namespace _2_ViewMapEditor
 {
     class MapModel
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="breedte"></param>
+        /// <param name="hoogte"></param>
         //Constructors
         public MapModel(int breedte, int hoogte)
         {
