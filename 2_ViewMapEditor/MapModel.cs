@@ -9,8 +9,6 @@ namespace _2_ViewMapEditor
 {
     class MapModel
     {
-
-       
         //Constructors
         public MapModel(int breedte, int hoogte)
         {
@@ -110,7 +108,7 @@ namespace _2_ViewMapEditor
             {
                 for (int j = 0; j < Breedte; j++)
                 {
-                    writer.Write(_map[i, j]);
+                    writer.Write(_map[i,j]);
                     if (j < Breedte - 1)//Geen komma op einde van lijn
                         writer.Write(",");
                 }
