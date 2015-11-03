@@ -46,13 +46,14 @@
                     </ComboBox.Items>
                 </ComboBox>
                 <Slider Name="slidesScale" ValueChanged="slidesScale_ValueChanged" Value="15" Maximum="50" Minimum="5" IsSnapToTickEnabled="True" TickFrequency="2"  ></Slider>
-               
-             
-                
+                <CheckBox x:Name="queueCheckbox" Content="Queue task"  Unchecked="checkBox_Unchecked"/>
+
+
+
 
             </StackPanel>
             <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto">
-                <Canvas Margin="10"  Name="mapCanvas"  MouseLeftButtonUp="mapCanvas_MouseLeftButtonUp" />
+                <Canvas Margin="10"  Name="mapCanvas"  MouseLeftButtonUp="mapCanvas_MouseLeftButtonUp" MouseMove="mapCanvas_MouseMove"  />
             </ScrollViewer>
 
 
