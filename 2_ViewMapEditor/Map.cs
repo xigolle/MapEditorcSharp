@@ -19,8 +19,8 @@ namespace _2_ViewMapEditor
         private int blockScale = 15;
         private string currentMapPath = "";
         private Canvas mapCanvas;
-        private Stack<Undo> undoHistory;
-        private Stack<Undo> redoHistory;
+        private Stack<RedoUndo> undoHistory;
+        private Stack<RedoUndo> redoHistory;
         private Queue<Queue> queueList;
         private bool mapExists;
 
@@ -53,14 +53,14 @@ namespace _2_ViewMapEditor
         }
 
 
-        public Stack<Undo> RedoHistory
+        public Stack<RedoUndo> RedoHistory
         {
             get { return redoHistory; }
             set { redoHistory = value; }
         }
 
 
-        public Stack<Undo> UndoHistory
+        public Stack<RedoUndo> UndoHistory
         {
             get { return undoHistory; }
             set { undoHistory = value; }
@@ -101,8 +101,8 @@ namespace _2_ViewMapEditor
             CurrentMap = new MapModel(breedte, hoogte);
             MapCanvas = canvas;
             QueueList = new Queue<Queue>();
-            UndoHistory = new Stack<Undo>();
-            RedoHistory = new Stack<Undo>();
+            UndoHistory = new Stack<RedoUndo>();
+            RedoHistory = new Stack<RedoUndo>();
 
         }
 

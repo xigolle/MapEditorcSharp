@@ -86,7 +86,7 @@
     <Compile Include="Map.cs" />
     <Compile Include="MapModel.cs" />
     <Compile Include="Queue.cs" />
-    <Compile Include="Undo.cs" />
+    <Compile Include="RedoUndo.cs" />
     <Compile Include="Warning.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

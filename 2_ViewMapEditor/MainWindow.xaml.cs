@@ -26,7 +26,7 @@ namespace _2_ViewMapEditor
         //private string currentMapPath = "";
         private bool collapsed = false;
         Map map;
-        Undo undomodel = new Undo();// model to call every undo action
+        RedoUndo undomodel = new RedoUndo();// model to call every undo action
 
 
         public MainWindow()
@@ -86,7 +86,6 @@ namespace _2_ViewMapEditor
 
         }
 
-
         private void menuSaveAs_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -127,7 +126,7 @@ namespace _2_ViewMapEditor
 
         private void mapCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //Bereken blokcoordinataat:
+
             if (cmbBrush.SelectedIndex > -1)
             {
                 Point click = e.MouseDevice.GetPosition(mapCanvas);
@@ -136,7 +135,7 @@ namespace _2_ViewMapEditor
                 var t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
                 if (queueCheckbox.IsChecked == false)
                 {
-                    Undo newAction = new Undo() { X = x, Y = y, OriginalValue = (int)map.CurrentMap.GetElement(x, y), typeBlock = Convert.ToInt32(t) };
+                    RedoUndo newAction = new RedoUndo() { X = x, Y = y, OriginalValue = (int)map.CurrentMap.GetElement(x, y), typeBlock = Convert.ToInt32(t) };
                     map.UndoHistory.Push(newAction);
                     map.CurrentMap.SetElement(x, y, Convert.ToInt32(t));
                     map.DrawMap();
@@ -154,24 +153,45 @@ namespace _2_ViewMapEditor
         {
             if (cmbBrush.SelectedIndex > -1 && e.LeftButton == MouseButtonState.Pressed)
             {
+
                 string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
                 Point click = e.MouseDevice.GetPosition(mapCanvas);
                 int breedte = (int)((click.X / map.BlockScale));
                 int hoogte = (int)((click.Y / map.BlockScale));
-                if (map.CurrentMap.GetElement(breedte, hoogte) != Convert.ToInt32(t))
-                {
-                    map.CurrentMap.SetElement(breedte, hoogte, Convert.ToInt32(t));
-                }
-                Undo newAction = new Undo() { X = breedte, Y = hoogte, OriginalValue = (int)map.CurrentMap.GetElement(breedte, hoogte), typeBlock = Convert.ToInt32(t) };
-                map.UndoHistory.Push(newAction);
-                if ((int)click.X % map.BlockScale == 0 || (int)click.Y % map.BlockScale == 0)
+
+
+                if (queueCheckbox.IsChecked == false)
                 {
 
+                    if (map.CurrentMap.GetElement(breedte, hoogte) != Convert.ToInt32(t))
+                    {
+                        RedoUndo newAction = new RedoUndo() { X = breedte, Y = hoogte, OriginalValue = (int)map.CurrentMap.GetElement(breedte, hoogte), typeBlock = Convert.ToInt32(t) };
+                        map.UndoHistory.Push(newAction);
+                        map.CurrentMap.SetElement(breedte, hoogte, Convert.ToInt32(t));
+                        if ((int)click.X % map.BlockScale == 0 || (int)click.Y % map.BlockScale == 0)
+                        {
 
-                    map.DrawMap();
+
+                            map.DrawMap();
 
 
+                        }
+                    }
                 }
+                else
+                {
+                    //checkbox is checked
+                    if (map.CurrentMap.GetElement(breedte, hoogte) != Convert.ToInt32(t))
+                    {
+                        RedoUndo newAction = new RedoUndo() { X = breedte, Y = hoogte, OriginalValue = (int)map.CurrentMap.GetElement(breedte, hoogte), typeBlock = Convert.ToInt32(t) };
+                        map.UndoHistory.Push(newAction);
+                        Queue tempQueue = new Queue(breedte, hoogte, Convert.ToInt32(t), map);
+                        tempQueue.QueueTask();
+                       
+                    }
+                }
+
+
             }
         }
 
@@ -183,7 +203,7 @@ namespace _2_ViewMapEditor
                 Toolbox.Visibility = Visibility.Visible;
 
                 //TODO: code moet aangepast worden dat hij weer terug naar asterisk(*) moet gaan
-                Toolbox.Width = 5;
+                rowToolbox.Width = new GridLength(1, GridUnitType.Star);
                 collapsed = false;
             }
             else
@@ -197,7 +217,7 @@ namespace _2_ViewMapEditor
 
         #endregion
 
-        
+
 
         #region Keyboard events
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -259,14 +279,14 @@ namespace _2_ViewMapEditor
         private void checkBox_Unchecked(object sender, RoutedEventArgs e)
         {
             Queue tempQueue = new Queue(map);
-            MessageBoxResult result = MessageBox.Show("Yes: Voer alle opgeslagen opdrachten uit /n No: Alle opgeslagen opdrachten worden verwijderd /n Cancel: Ga verder met het bewerken van uw wachtrij", "opgeslagen opdrachten uitvoeren", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show("Yes: Voer alle opgeslagen opdrachten uit \nNo: Alle opgeslagen opdrachten worden verwijderd \nCancel: Ga verder met het bewerken van uw wachtrij", "opgeslagen opdrachten uitvoeren", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                
+
                 tempQueue.UnQueueAndDrawList();
 
             }
-            if(result == MessageBoxResult.No)
+            if (result == MessageBoxResult.No)
             {
                 tempQueue.ClearQueueList();
             }

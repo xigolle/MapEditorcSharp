@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _2_ViewMapEditor
 {
-    class Undo
+    class RedoUndo
     {
         #region public property
 
@@ -24,7 +24,7 @@ namespace _2_ViewMapEditor
         {
             if (currentMap.RedoHistory.Count > 0)
             {
-                Undo redoAction = currentMap.RedoHistory.Pop();
+                RedoUndo redoAction = currentMap.RedoHistory.Pop();
                 currentMap.UndoHistory.Push(redoAction);
                 currentMap.CurrentMap.SetElement(redoAction.X, redoAction.Y, redoAction.typeBlock);
                 currentMap.DrawMap();
@@ -35,7 +35,7 @@ namespace _2_ViewMapEditor
         {
             if (currentMap.UndoHistory.Count > 0)
             {
-                Undo lastaction = currentMap.UndoHistory.Pop();
+                RedoUndo lastaction = currentMap.UndoHistory.Pop();
                 currentMap.RedoHistory.Push(lastaction);
                 currentMap.CurrentMap.SetElement(lastaction.X, lastaction.Y, lastaction.OriginalValue);
 
@@ -43,6 +43,7 @@ namespace _2_ViewMapEditor
             }
         }
 
+        
         #endregion
 
     }

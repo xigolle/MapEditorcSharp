@@ -32,12 +32,12 @@
 
         <Grid Grid.Row="1" Margin="5" >
             <Grid.ColumnDefinitions >
-                <ColumnDefinition Name="rowToolbox" Width="*"></ColumnDefinition>
+                <ColumnDefinition  Name="rowToolbox" Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Row="0" Name="Toolbox">
-                <ComboBox Name="cmbBrush">
+                <ComboBox Margin="0,0,0,5" Name="cmbBrush">
                     <ComboBox.Items>
                         <ComboBoxItem>1</ComboBoxItem>
                         <ComboBoxItem>2</ComboBoxItem>
@@ -45,15 +45,16 @@
                         <ComboBoxItem>4</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
-                <Slider Name="slidesScale" ValueChanged="slidesScale_ValueChanged" Value="15" Maximum="50" Minimum="5" IsSnapToTickEnabled="True" TickFrequency="2"  ></Slider>
-                <CheckBox x:Name="queueCheckbox" Content="Queue task"  Unchecked="checkBox_Unchecked"/>
+                <Slider Margin="0,0,0,5" Name="slidesScale" ValueChanged="slidesScale_ValueChanged" Value="15" Maximum="50" Minimum="5" IsSnapToTickEnabled="True" TickFrequency="2"  ></Slider>
+                <CheckBox Margin="0,0,0,5" x:Name="queueCheckbox" Content="Queue task"  Unchecked="checkBox_Unchecked"/>
+                <CheckBox Margin="0,0,0,5" Name="DrawRectangleCheckbox" Content="Rectangle" />
 
 
 
 
             </StackPanel>
             <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto">
-                <Canvas Margin="10"  Name="mapCanvas"  MouseLeftButtonUp="mapCanvas_MouseLeftButtonUp" MouseMove="mapCanvas_MouseMove"  />
+                <Canvas Margin="10"  Name="mapCanvas"  MouseLeftButtonUp="mapCanvas_MouseLeftButtonUp" MouseMove="mapCanvas_MouseMove"   />
             </ScrollViewer>
 
 
