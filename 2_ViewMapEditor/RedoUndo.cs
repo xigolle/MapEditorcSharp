@@ -32,6 +32,14 @@ namespace _2_ViewMapEditor
             currentMap = map;
 
         }
+        public RedoUndo(customRectangle rectangle, Map map)
+        {
+            X = rectangle.X;
+            Y = rectangle.Y;
+            typeBlock = rectangle.TypeBlock;
+            currentMap = map;
+
+        }
 
         #endregion
 
@@ -52,10 +60,14 @@ namespace _2_ViewMapEditor
         {
             if (currentMap.UndoHistory.Count > 0)
             {
+               
                 RedoUndo lastaction = currentMap.UndoHistory.Pop();
                 currentMap.RedoHistory.Push(lastaction);
                 currentMap.CurrentMap.SetElement(lastaction.X, lastaction.Y, lastaction.OriginalValue);
-
+                if (currentMap.QueueList.Count > 0 && currentMap.QueueChecked)
+                {
+                    currentMap.QueueList.Dequeue();
+                }
                 currentMap.RenderMap();
             }
         }

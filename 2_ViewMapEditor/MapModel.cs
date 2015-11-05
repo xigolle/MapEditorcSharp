@@ -56,11 +56,24 @@ namespace _2_ViewMapEditor
         //methods
         public void SetElement(int x, int y, int value)
         {
-            _map[y, x] = (byte)value; //Todo check if valid x, y value
+            int text = _map.GetLength(1);
+            int teyt = _map.GetLength(0);
+            if((x >=0 && x <_map.GetLength(1))&& (y >= 0 && y < _map.GetLength(0) ))
+            {
+                _map[y, x] = (byte)value; 
+            }
+            
         }
         public int GetElement(int x, int y)
         {
-            return Convert.ToInt32(_map[y, x]); //Todo check if valid x, y value
+            if ((x >= 0 && x < _map.GetLength(1)) && (y >= 0 && y < _map.GetLength(0)))
+            {
+                return Convert.ToInt32(_map[y, x]); 
+            }
+            else
+            {
+                return 0;
+            }
         }
         public void ClearMap()
         {

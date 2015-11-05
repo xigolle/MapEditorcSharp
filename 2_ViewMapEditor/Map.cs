@@ -25,12 +25,38 @@ namespace _2_ViewMapEditor
         private Queue<Queue> queueList;
         private bool mapExists;
         private bool queueChecked = false;
-        
-        
+        private bool createNewMap = false;
+        private int newMapBreedte;
+        private int newMapHoogte;
+
+        public int NewMapHoogte
+        {
+            get { return newMapHoogte; }
+            set { newMapHoogte = value; }
+        }
+
+        public int NewMapBreedte
+        {
+            get { return newMapBreedte; }
+            set { newMapBreedte = value; }
+        }
+
+
+
+
+        public bool CreateNewMap
+        {
+            get { return createNewMap; }
+            set { createNewMap = value; }
+        }
+
+
+
 
         public bool MapExists
         {
-            get {
+            get
+            {
                 if (currentMap.Breedte == 0 && currentMap.Hoogte == 0)
                 {
                     //there doesnt exist a valid map or it is default map
@@ -43,12 +69,14 @@ namespace _2_ViewMapEditor
                     return mapExists;
                 }
             }
-            
+
         }
 
         #endregion
 
         #region public propery
+
+
         public bool QueueChecked
         {
             get { return queueChecked; }
@@ -105,7 +133,7 @@ namespace _2_ViewMapEditor
 
         #region Constructor
 
-        public Map(int breedte, int hoogte,Canvas canvas)
+        public Map(int breedte, int hoogte, Canvas canvas)
         {
             CurrentMap = new MapModel(breedte, hoogte);
             MapCanvas = canvas;
@@ -130,6 +158,7 @@ namespace _2_ViewMapEditor
                     for (int j = 0; j < currentMap.Breedte; j++)
                     {
                         Rectangle blok = new Rectangle();
+
                         blok.Stroke = new SolidColorBrush(Colors.Black);
                         blok.StrokeThickness = 0.3;
                         blok.Width = blockScale;
@@ -189,8 +218,8 @@ namespace _2_ViewMapEditor
                 CurrentMap.SaveMap(CurrentMapPath);
             }
         }
-       
-        public void DrawOnMap(Block blok,Point click)
+
+        public void DrawOnMap(Block blok, Point click)
         {
             if (QueueChecked)
             {
@@ -198,8 +227,8 @@ namespace _2_ViewMapEditor
                 //checkbox is checked
                 if (CurrentMap.GetElement(blok.X, blok.Y) != Convert.ToInt32(blok.TypeBlock))
                 {
-                    int originalvalue = (int)CurrentMap.GetElement(blok.X, blok.Y);
-                    RedoUndo newAction = new RedoUndo(blok,this);
+
+                    RedoUndo newAction = new RedoUndo(blok, this);
                     UndoHistory.Push(newAction);
                     Queue tempQueue = new Queue(blok.X, blok.Y, Convert.ToInt32(blok.TypeBlock), this);
                     tempQueue.QueueTask();
@@ -210,7 +239,7 @@ namespace _2_ViewMapEditor
             {
                 if (CurrentMap.GetElement(blok.X, blok.Y) != Convert.ToInt32(blok.TypeBlock))
                 {
-                    int originalvalue = (int)CurrentMap.GetElement(blok.X, blok.Y);
+
                     RedoUndo newAction = new RedoUndo(blok, this);
                     UndoHistory.Push(newAction);
                     CurrentMap.SetElement(blok.X, blok.Y, Convert.ToInt32(blok.TypeBlock));
@@ -218,15 +247,124 @@ namespace _2_ViewMapEditor
                     //{
 
 
-                        RenderMap();
+                    RenderMap();
 
 
                     //}
                 }
-              
+
+            }
+        }
+        public void DrawOnMap(customRectangle rectangle, Point click)
+        {
+            int defaultY = rectangle.Y;
+            if (QueueChecked)
+            {
+                for (int x = 0; x < rectangle.Width; x++)
+                {
+                    for (int y = 0; y < rectangle.Height; y++)
+                    {
+                        RedoUndo newAction = new RedoUndo(rectangle, this);
+                        undoHistory.Push(newAction);
+                        Queue tempQueue = new Queue(rectangle.X, rectangle.Y, Convert.ToInt32(rectangle.TypeBlock), this);
+                        tempQueue.QueueTask();
+                        rectangle.Y += 1;
+                    }
+                    rectangle.Y = defaultY;
+                    rectangle.X += 1;
+                }
+
+            }
+            else
+            {
+                for (int x = 0; x < rectangle.Width; x++)
+                {
+                    for (int y = 0; y < rectangle.Height; y++)
+                    {
+                        RedoUndo newAction = new RedoUndo(rectangle, this);
+                        undoHistory.Push(newAction);
+                        currentMap.SetElement(rectangle.X, rectangle.Y, Convert.ToInt32(rectangle.TypeBlock));
+                        RenderMap();
+                        rectangle.Y += 1;
+                    }
+                    rectangle.Y = defaultY;
+                    rectangle.X += 1;
+
+                }
+
+
             }
         }
 
+        public void RenderRandomMap()
+        {
+            Random r = new Random();
+            if (createNewMap)
+            {
+
+                currentMap = new MapModel(NewMapBreedte, NewMapHoogte);
+            }
+            int type = r.Next(0, 4);
+            for (int x = 0; x < currentMap.Breedte; x++)
+            {
+                for (int y = 0; y < currentMap.Hoogte; y++)
+                {
+
+                    currentMap.SetElement(x, y, type);
+                    type = r.Next(0, 4);
+                }
+            }
+
+            this.RenderMap();
+
+
+        }
+        public void RenderRandomMap(int typeBlock, int amount)
+        {
+            Random r = new Random();
+            if (createNewMap)
+            {
+
+                currentMap = new MapModel(NewMapBreedte, NewMapHoogte);
+            }
+            int type = r.Next(0, 4);
+            if (amount > (currentMap.Breedte * currentMap.Hoogte))
+            {
+                amount = currentMap.Breedte * currentMap.Hoogte;
+            }
+            while (amount > 0)
+            {
+                for (int x = 0; x < currentMap.Breedte; x++)
+                {
+                    for (int y = 0; y < currentMap.Hoogte; y++)
+                    {
+                        if (type == typeBlock && currentMap.GetElement(x, y) != type)
+                        {
+                            int current = currentMap.GetElement(x, y);
+                            currentMap.SetElement(x, y, type);
+                            amount--;
+
+
+
+                        }
+                        else
+                        {
+                            if (currentMap.GetElement(x, y) != typeBlock)
+                            {
+                                currentMap.SetElement(x, y, type);
+                            }
+
+                        }
+
+                        type = r.Next(0, 4);
+
+                    }
+                }
+            }
+
+
+            this.RenderMap();
+        }
         #endregion
 
     }

@@ -45,6 +45,9 @@ namespace _2_ViewMapEditor
 
         }
 
+      
+
+
         #region Mouse Events
 
         private void menuNew_Click(object sender, RoutedEventArgs e)
@@ -65,7 +68,7 @@ namespace _2_ViewMapEditor
                 {
                     map.RenderMap();
                 });
-                
+
             }
 
 
@@ -135,14 +138,6 @@ namespace _2_ViewMapEditor
 
             if (cmbBrush.SelectedIndex > -1)
             {
-                Point click = e.MouseDevice.GetPosition(mapCanvas);
-                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
-
-                int breedte = (int)((click.X / map.BlockScale));
-                int hoogte = (int)((click.Y / map.BlockScale));
-                singleBlock.X = breedte;
-                singleBlock.Y = hoogte;
-                singleBlock.TypeBlock = Convert.ToInt32(t);
                 if (queueCheckbox.IsChecked == true)
                 {
                     map.QueueChecked = true;
@@ -151,22 +146,98 @@ namespace _2_ViewMapEditor
                 {
                     map.QueueChecked = false;
                 }
-                map.DrawOnMap(singleBlock, click);
+                Point click = e.MouseDevice.GetPosition(mapCanvas);
+                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
+
+                int x = (int)((click.X / map.BlockScale));
+                int y = (int)((click.Y / map.BlockScale));
+
+                if (DrawRectangleCheckbox.IsChecked == true)
+                {
+                    customRectangle rectangle = new customRectangle();
+                    rectangle.X = x;
+                    rectangle.Y = y;
+                    try
+                    {
+                        rectangle.Width = Convert.ToInt32(newRectangleBreedte.Text);
+                        rectangle.Height = Convert.ToInt32(newRectangleHoogte.Text);
+                    }
+                    catch (FormatException)
+                    {
+
+                        MessageBox.Show("Alleen nummers mogen ingevuld worden");
+                        newRectangleBreedte.Text = newRectangleBreedte.placeHolderText;
+                        
+                        newRectangleHoogte.Text = newRectangleHoogte.placeHolderText;
+                    }
+                    catch (Exception excp)
+                    {
+                        MessageBox.Show(excp.ToString());
+                    }
+
+                    rectangle.TypeBlock = Convert.ToInt32(t);
+
+                    map.DrawOnMap(rectangle, click);
+                }
+                else
+                {
+                    singleBlock.X = x;
+                    singleBlock.Y = y;
+                    singleBlock.TypeBlock = Convert.ToInt32(t);
+
+                    map.DrawOnMap(singleBlock, click);
+                }
+
+
             }
+        }
+
+        private void CreateRandomMap_Click(object sender, RoutedEventArgs e)
+        {
+            if (map.CreateNewMap)
+            {
+
+                try
+                {
+                    map.NewMapBreedte = Convert.ToInt32(newMapBreedte.Text);
+                    map.NewMapHoogte = Convert.ToInt32(newMapHoogte.Text);
+                }
+                catch (FormatException)
+                {
+
+                    MessageBox.Show("Alleen nummers mogen ingevuld worden");
+                    newMapBreedte.Text = newMapBreedte.placeHolderText;
+
+                    newMapHoogte.Text = newMapHoogte.placeHolderText;
+                }
+                catch (Exception excp)
+                {
+                    MessageBox.Show(excp.ToString());
+                }
+
+            }
+
+            int parseValue;
+            if (!int.TryParse(minTypeTextBox.Text, out parseValue) && !int.TryParse(minTypeTextBox.Text, out parseValue))
+
+            {
+                //the input is not a number. This could be the helper text or a wrong input
+                map.RenderRandomMap();
+            }
+            else
+            {
+                int type = Convert.ToInt32(minTypeTextBox.Text);
+                int amount = Convert.ToInt32(minAmountTextBox.Text);
+                map.RenderRandomMap(type, amount);
+            }
+
+
         }
 
         private void mapCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (cmbBrush.SelectedIndex > -1 && e.LeftButton == MouseButtonState.Pressed)
             {
-                Point click = e.MouseDevice.GetPosition(mapCanvas);
-                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
-
-                int breedte = (int)((click.X / map.BlockScale));
-                int hoogte = (int)((click.Y / map.BlockScale));
-                singleBlock.X = breedte;
-                singleBlock.Y = hoogte;
-                singleBlock.TypeBlock = Convert.ToInt32(t);
                 if (queueCheckbox.IsChecked == true)
                 {
                     map.QueueChecked = true;
@@ -175,12 +246,47 @@ namespace _2_ViewMapEditor
                 {
                     map.QueueChecked = false;
                 }
-                map.DrawOnMap(singleBlock, click);
+                Point click = e.MouseDevice.GetPosition(mapCanvas);
+                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
 
+                int x = (int)((click.X / map.BlockScale));
+                int y = (int)((click.Y / map.BlockScale));
 
+                if (DrawRectangleCheckbox.IsChecked == true)
+                {
+                    customRectangle rectangle = new customRectangle();
+                    rectangle.X = x;
+                    rectangle.Y = y;
+                    try
+                    {
+                        rectangle.Width = Convert.ToInt32(newRectangleBreedte.Text);
+                        rectangle.Height = Convert.ToInt32(newRectangleHoogte.Text);
+                    }
+                    catch (FormatException)
+                    {
 
+                        MessageBox.Show("Alleen nummers mogen ingevuld worden");
+                        newRectangleBreedte.Text = newRectangleBreedte.placeHolderText;
 
+                        newRectangleHoogte.Text = newRectangleHoogte.placeHolderText;
+                    }
+                    catch (Exception excp)
+                    {
+                        MessageBox.Show(excp.ToString());
+                    }
 
+                    rectangle.TypeBlock = Convert.ToInt32(t);
+
+                    map.DrawOnMap(rectangle, click);
+                }
+                else
+                {
+                    singleBlock.X = x;
+                    singleBlock.Y = y;
+                    singleBlock.TypeBlock = Convert.ToInt32(t);
+
+                    map.DrawOnMap(singleBlock, click);
+                }
 
 
 
@@ -195,7 +301,7 @@ namespace _2_ViewMapEditor
 
                 Toolbox.Visibility = Visibility.Visible;
 
-                //TODO: code moet aangepast worden dat hij weer terug naar asterisk(*) moet gaan
+                
                 rowToolbox.Width = new GridLength(1, GridUnitType.Star);
                 collapsed = false;
             }
@@ -245,10 +351,7 @@ namespace _2_ViewMapEditor
 
 
             }
-            else
-            {
-
-            }
+            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -288,16 +391,47 @@ namespace _2_ViewMapEditor
                 queueCheckbox.IsChecked = true;
             }
         }
+
+        private void TypeMapRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+            RadioButton ck = (RadioButton)sender;
+            if (ck.Content.ToString() == "Use current map")
+            {
+                if (map != null)
+                {
+                    map.CreateNewMap = false;
+                }
+
+            }
+            else if (ck.Content.ToString() == "Create new map")
+            {
+                map.CreateNewMap = true;
+
+
+
+
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
         #endregion
 
 
 
+        
 
-
-
-
-
-
-
+        
     }
 }
