@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,7 @@ namespace _2_ViewMapEditor
         //private string currentMapPath = "";
         private bool collapsed = false;
         Map map;
+        Block singleBlock;
         RedoUndo undomodel = new RedoUndo();// model to call every undo action
 
 
@@ -35,6 +37,7 @@ namespace _2_ViewMapEditor
             InitializeComponent();
             map = new Map(0, 0, mapCanvas);
             undomodel.currentMap = map;
+            singleBlock = new Block();
             //currentMap = new MapModel(0, 0);
 
             cmbBrush.SelectedIndex = 0;
@@ -58,8 +61,11 @@ namespace _2_ViewMapEditor
                 MapDimensions askdims = new MapDimensions();
                 askdims.ShowDialog();
                 map.CurrentMap = new MapModel(askdims.Breedte, askdims.Hoogte);
-
-                map.DrawMap();
+                map.MapCanvas.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, (ThreadStart)delegate
+                {
+                    map.RenderMap();
+                });
+                
             }
 
 
@@ -72,7 +78,7 @@ namespace _2_ViewMapEditor
             {
                 map.CurrentMapPath = dialog.FileName;
                 map.CurrentMap = new MapModel(map.CurrentMapPath);
-                map.DrawMap();
+                map.RenderMap();
 
 
             }
@@ -105,7 +111,7 @@ namespace _2_ViewMapEditor
             if (result == MessageBoxResult.Yes)
             {
                 map.CurrentMap.ClearMap();
-                map.DrawMap();
+                map.RenderMap();
             }
         }
 
@@ -130,22 +136,22 @@ namespace _2_ViewMapEditor
             if (cmbBrush.SelectedIndex > -1)
             {
                 Point click = e.MouseDevice.GetPosition(mapCanvas);
-                int x = (int)((click.X / map.BlockScale));
-                int y = (int)((click.Y / map.BlockScale));
-                var t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
-                if (queueCheckbox.IsChecked == false)
-                {
-                    RedoUndo newAction = new RedoUndo() { X = x, Y = y, OriginalValue = (int)map.CurrentMap.GetElement(x, y), typeBlock = Convert.ToInt32(t) };
-                    map.UndoHistory.Push(newAction);
-                    map.CurrentMap.SetElement(x, y, Convert.ToInt32(t));
-                    map.DrawMap();
+                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
 
+                int breedte = (int)((click.X / map.BlockScale));
+                int hoogte = (int)((click.Y / map.BlockScale));
+                singleBlock.X = breedte;
+                singleBlock.Y = hoogte;
+                singleBlock.TypeBlock = Convert.ToInt32(t);
+                if (queueCheckbox.IsChecked == true)
+                {
+                    map.QueueChecked = true;
                 }
                 else
                 {
-                    Queue tempQueue = new Queue(x, y, Convert.ToInt32(t), map);
-                    tempQueue.QueueTask();
+                    map.QueueChecked = false;
                 }
+                map.DrawOnMap(singleBlock, click);
             }
         }
 
@@ -153,43 +159,30 @@ namespace _2_ViewMapEditor
         {
             if (cmbBrush.SelectedIndex > -1 && e.LeftButton == MouseButtonState.Pressed)
             {
-
-                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
                 Point click = e.MouseDevice.GetPosition(mapCanvas);
+                string t = (cmbBrush.SelectedItem as ComboBoxItem).Content.ToString();
+
                 int breedte = (int)((click.X / map.BlockScale));
                 int hoogte = (int)((click.Y / map.BlockScale));
-
-
-                if (queueCheckbox.IsChecked == false)
+                singleBlock.X = breedte;
+                singleBlock.Y = hoogte;
+                singleBlock.TypeBlock = Convert.ToInt32(t);
+                if (queueCheckbox.IsChecked == true)
                 {
-
-                    if (map.CurrentMap.GetElement(breedte, hoogte) != Convert.ToInt32(t))
-                    {
-                        RedoUndo newAction = new RedoUndo() { X = breedte, Y = hoogte, OriginalValue = (int)map.CurrentMap.GetElement(breedte, hoogte), typeBlock = Convert.ToInt32(t) };
-                        map.UndoHistory.Push(newAction);
-                        map.CurrentMap.SetElement(breedte, hoogte, Convert.ToInt32(t));
-                        if ((int)click.X % map.BlockScale == 0 || (int)click.Y % map.BlockScale == 0)
-                        {
-
-
-                            map.DrawMap();
-
-
-                        }
-                    }
+                    map.QueueChecked = true;
                 }
                 else
                 {
-                    //checkbox is checked
-                    if (map.CurrentMap.GetElement(breedte, hoogte) != Convert.ToInt32(t))
-                    {
-                        RedoUndo newAction = new RedoUndo() { X = breedte, Y = hoogte, OriginalValue = (int)map.CurrentMap.GetElement(breedte, hoogte), typeBlock = Convert.ToInt32(t) };
-                        map.UndoHistory.Push(newAction);
-                        Queue tempQueue = new Queue(breedte, hoogte, Convert.ToInt32(t), map);
-                        tempQueue.QueueTask();
-                       
-                    }
+                    map.QueueChecked = false;
                 }
+                map.DrawOnMap(singleBlock, click);
+
+
+
+
+
+
+
 
 
             }
@@ -260,7 +253,7 @@ namespace _2_ViewMapEditor
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            map.DrawMap();
+            map.RenderMap();
         }
 
         #endregion
@@ -271,7 +264,7 @@ namespace _2_ViewMapEditor
             if (map != null)
             {
                 map.BlockScale = (int)e.NewValue;
-                map.DrawMap();
+                map.RenderMap();
             }
 
         }

@@ -18,6 +18,23 @@ namespace _2_ViewMapEditor
 
         #endregion
 
+        #region constructors
+
+        public RedoUndo()
+        {
+
+        }
+        public RedoUndo(Block block, Map map)
+        {
+            X = block.X;
+            Y = block.Y;
+            typeBlock = block.TypeBlock;
+            currentMap = map;
+
+        }
+
+        #endregion
+
         #region public methods
 
         public void redoAction()
@@ -27,7 +44,7 @@ namespace _2_ViewMapEditor
                 RedoUndo redoAction = currentMap.RedoHistory.Pop();
                 currentMap.UndoHistory.Push(redoAction);
                 currentMap.CurrentMap.SetElement(redoAction.X, redoAction.Y, redoAction.typeBlock);
-                currentMap.DrawMap();
+                currentMap.RenderMap();
             }
         }
 
@@ -39,7 +56,7 @@ namespace _2_ViewMapEditor
                 currentMap.RedoHistory.Push(lastaction);
                 currentMap.CurrentMap.SetElement(lastaction.X, lastaction.Y, lastaction.OriginalValue);
 
-                currentMap.DrawMap();
+                currentMap.RenderMap();
             }
         }
 

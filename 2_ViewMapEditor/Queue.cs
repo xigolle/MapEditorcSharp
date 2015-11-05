@@ -54,7 +54,7 @@ namespace _2_ViewMapEditor
                 currentMap.CurrentMap.SetElement(temp.X, temp.Y, temp.OriginalValue);
 
             }
-            currentMap.DrawMap();
+            currentMap.RenderMap();
         }
 
     }

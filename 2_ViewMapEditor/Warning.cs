@@ -81,7 +81,7 @@ namespace _2_ViewMapEditor
                 askdims.ShowDialog();
                 currentMap.CurrentMap = new MapModel(askdims.Breedte, askdims.Hoogte);
 
-                currentMap.DrawMap();
+                currentMap.RenderMap();
             }
             if (result == MessageBoxResult.No)
             {
@@ -90,7 +90,7 @@ namespace _2_ViewMapEditor
                 askdims.ShowDialog();
                 currentMap.CurrentMap = new MapModel(askdims.Breedte, askdims.Hoogte);
 
-                currentMap.DrawMap();
+                currentMap.RenderMap();
 
             }
             if (result == MessageBoxResult.Cancel)

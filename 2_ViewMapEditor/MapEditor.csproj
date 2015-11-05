@@ -83,6 +83,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Block.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapModel.cs" />
     <Compile Include="Queue.cs" />

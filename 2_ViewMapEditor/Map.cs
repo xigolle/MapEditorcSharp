@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -23,6 +24,9 @@ namespace _2_ViewMapEditor
         private Stack<RedoUndo> redoHistory;
         private Queue<Queue> queueList;
         private bool mapExists;
+        private bool queueChecked = false;
+        
+        
 
         public bool MapExists
         {
@@ -45,6 +49,11 @@ namespace _2_ViewMapEditor
         #endregion
 
         #region public propery
+        public bool QueueChecked
+        {
+            get { return queueChecked; }
+            set { queueChecked = value; }
+        }
 
         public Queue<Queue> QueueList
         {
@@ -159,7 +168,7 @@ namespace _2_ViewMapEditor
 
         #region public Methods 
 
-        public void DrawMap()
+        public void RenderMap()
         {
             LoadMapOnView();
         }
@@ -181,6 +190,42 @@ namespace _2_ViewMapEditor
             }
         }
        
+        public void DrawOnMap(Block blok,Point click)
+        {
+            if (QueueChecked)
+            {
+
+                //checkbox is checked
+                if (CurrentMap.GetElement(blok.X, blok.Y) != Convert.ToInt32(blok.TypeBlock))
+                {
+                    int originalvalue = (int)CurrentMap.GetElement(blok.X, blok.Y);
+                    RedoUndo newAction = new RedoUndo(blok,this);
+                    UndoHistory.Push(newAction);
+                    Queue tempQueue = new Queue(blok.X, blok.Y, Convert.ToInt32(blok.TypeBlock), this);
+                    tempQueue.QueueTask();
+
+                }
+            }
+            else
+            {
+                if (CurrentMap.GetElement(blok.X, blok.Y) != Convert.ToInt32(blok.TypeBlock))
+                {
+                    int originalvalue = (int)CurrentMap.GetElement(blok.X, blok.Y);
+                    RedoUndo newAction = new RedoUndo(blok, this);
+                    UndoHistory.Push(newAction);
+                    CurrentMap.SetElement(blok.X, blok.Y, Convert.ToInt32(blok.TypeBlock));
+                    //if ((int)click.X % BlockScale == 0 || (int)click.Y % BlockScale == 0)
+                    //{
+
+
+                        RenderMap();
+
+
+                    //}
+                }
+              
+            }
+        }
 
         #endregion
 
