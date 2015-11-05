@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_2_ViewMapEditor"
         mc:Ignorable="d"
-        Title="AP's epic Map Editor" Height="424" Width="938" Loaded="Window_Loaded" Closing="Window_Closing" KeyDown="Window_KeyDown">
+        Title="Joey's epic Map Editor" Height="424" Width="938" Loaded="Window_Loaded" Closing="Window_Closing" KeyDown="Window_KeyDown">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
