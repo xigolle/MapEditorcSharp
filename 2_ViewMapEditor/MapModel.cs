@@ -60,15 +60,18 @@ namespace _2_ViewMapEditor
             int teyt = _map.GetLength(0);
             if((x >=0 && x <_map.GetLength(1))&& (y >= 0 && y < _map.GetLength(0) ))
             {
+
                 _map[y, x] = (byte)value; 
             }
             
         }
         public int GetElement(int x, int y)
         {
+
             if ((x >= 0 && x < _map.GetLength(1)) && (y >= 0 && y < _map.GetLength(0)))
             {
-                return Convert.ToInt32(_map[y, x]); 
+                return Convert.ToInt32(_map[y, x]);
+
             }
             else
             {
