@@ -33,7 +33,6 @@ namespace _2_ViewMapEditor
 
         public MainWindow()
         {
-
             InitializeComponent();
             map = new Map(0, 0, mapCanvas);
             undomodel.currentMap = map;
